@@ -1,7 +1,10 @@
 package wallet
 
 import (
+	"reflect"
 	"testing"
+
+	"github.com/AlisherGulomzoda/wallet/pkg/types"
 )
 
 func TestService_Register(t *testing.T) {
@@ -90,5 +93,40 @@ func TestService_FindByAccountByID_notFound(t *testing.T) {
 	// тут даст false, так как err (уже имеет что то внутри)
 	if err != ErrAccountNotFound {
 		t.Error(err)
+	}
+}
+
+func TestFindPaymentByID_success(t *testing.T) {
+	svc := &Service{}
+
+	phone := types.Phone("+992000000000")
+
+	account, err := svc.RegisterAccount(phone)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = svc.Deposit(account.ID, 1000)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	pay, err := svc.Pay(account.ID, 500, "auto")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	got, err := svc.FindPaymetByID(pay.ID)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !reflect.DeepEqual(got, pay) {
+		t.Error(err)
+		return
 	}
 }

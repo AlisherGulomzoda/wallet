@@ -12,6 +12,7 @@ var (
 	ErrAmountMustGreateZero = errors.New("amount must be greated then zero")
 	ErrAccountNotFound = errors.New("account not found")
 	ErrBalanceNotAmount = errors.New("balance little then amount")
+	ErrPaymentNotFound = errors.New("payment not found")
 )
 
 type Service struct {
@@ -113,4 +114,44 @@ func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	}
 
 	return account, nil
+}
+
+func (s *Service) Reject(paymentID string) error {
+	payment, err := s.FindPaymetByID(paymentID)
+	if err != nil {
+		return err
+	}
+
+	var account *types.Account
+	for _, acc := range s.accounts {
+		if acc.ID == payment.AccountID {
+			account = acc
+		}
+	}
+
+	if account == nil {
+		return ErrAccountNotFound
+	}
+
+	payment.Status = types.PaymentStatusFail
+	account.Balance += payment.Amount 
+	payment.Amount = 0
+	
+	return nil
+
+}
+
+func (s *Service) FindPaymetByID(paymentID string) (*types.Payment, error) {
+	var payment *types.Payment
+	for _, pay := range s.payments {
+		if pay.ID == paymentID {
+			payment = pay
+		}
+	}
+
+	if payment == nil {
+		return nil, ErrPaymentNotFound
+	}
+
+	return payment, nil
 }

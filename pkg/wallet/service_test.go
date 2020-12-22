@@ -1,11 +1,36 @@
 package wallet
 
 import (
+	// "github.com/google/uuid"
+	"fmt"
 	"reflect"
 	"testing"
 
 	"github.com/AlisherGulomzoda/wallet/pkg/types"
 )
+
+type testService struct {
+	*Service
+}
+
+func newTestServicw() *testService {
+	return &testService{Service : &Service{}}
+}
+
+func (s *testService) addAccountWithBalancce(phone types.Phone, balance types.Money) (*types.Account, error) {
+	account, err := s.RegisterAccount(phone)
+	if err != nil {
+		return nil, fmt.Errorf("can't regiter account, error = %v", err)
+	}
+
+	err = s.Deposit(account.ID, balance)
+	if err != nil {
+		return nil, fmt.Errorf("can't deposit account, %v", err)
+	}
+
+	return account, nil
+
+}
 
 func TestService_Register(t *testing.T) {
 	svc := Service{}
@@ -130,3 +155,54 @@ func TestFindPaymentByID_success(t *testing.T) {
 		return
 	}
 }
+
+// func TestService_FindPaymentByID_success(t *testing.T) {
+// 	s := newTestServicw()
+// 	account, err := s.addAccountWithBalancce("+992935811033", 10_000_00)
+// 	if err != nil {
+// 		t.Error(err)
+// 		return
+// 	}
+
+// 	payment, err := s.Pay(account.ID, 1_000_00, "auto")
+// 	if err != nil {
+// 		t.Errorf("FindPaymentByID(): can't create payment, error = %v", err)
+// 	}
+
+// 	got, err := s.FindPaymetByID(payment.ID)
+// 	if err != nil {
+// 		t.Errorf("FindPaymentByID(): error = %v", err)
+// 	}
+
+// 	if reflect.DeepEqual(payment, got) {
+// 		t.Errorf("FindPaymentID(): wrong payment returned = %v", err)
+// 	}
+	
+// }
+
+// func TestService_FindPaymentByID_fail(t *testing.T) {
+// 	s := newTestServicw()
+// 	account, err := s.addAccountWithBalancce("+992935811033", 10_000_00)
+// 	if err != nil {
+// 		t.Error(err)
+// 		return
+// 	}
+
+// 	_, err = s.Pay(account.ID, 1_000_00, "auto")
+// 	if err != nil {
+// 		t.Errorf("FindPaymentByID(): can't create payment, error = %v", err)
+// 		return
+// 	}
+
+// 	_, err = s.FindPaymetByID(uuid.New().String())
+// 	if err != nil {
+// 		t.Errorf("FindPaymentByID(): error = %v", err)
+// 		return
+// 	}
+
+// 	if err != ErrPaymentNotFound {
+// 		t.Errorf("FindPaymentID(): wrong payment returned = %v", err)
+// 		return
+// 	}
+	
+// }

@@ -142,16 +142,12 @@ func (s *Service) Reject(paymentID string) error {
 }
 
 func (s *Service) FindPaymetByID(paymentID string) (*types.Payment, error) {
-	var payment *types.Payment
 	for _, pay := range s.payments {
 		if pay.ID == paymentID {
-			payment = pay
+			return pay, nil
 		}
 	}
 
-	if payment == nil {
-		return nil, ErrPaymentNotFound
-	}
+	return nil, ErrPaymentNotFound
 
-	return payment, nil
 }

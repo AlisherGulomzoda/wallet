@@ -156,6 +156,24 @@ func TestFindPaymentByID_success(t *testing.T) {
 	}
 }
 
+func TestService_Repeat_success(t *testing.T) {
+	s := newTestServicw()
+	account, err := s.addAccountWithBalancce("+992935811034", 10_000_00)
+	if err != nil {
+		t.Error(err)
+	}
+
+	payment, err := s.Pay(account.ID, 1_000_00, "auto")
+	if err != nil {
+		t.Errorf("FindPaymentByID(): can't create payment, error = %v", err)
+	}
+
+	payment, err = s.Repeat(payment.ID)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 // func TestService_FindPaymentByID_success(t *testing.T) {
 // 	s := newTestServicw()
 // 	account, err := s.addAccountWithBalancce("+992935811033", 10_000_00)

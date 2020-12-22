@@ -27,3 +27,30 @@ type Account struct {
 	Phone   Phone
 	Balance Money
 }
+
+type Messenger interface {
+	Send(message string) (ok bool)
+	Receive() (message string, ok bool)
+}
+
+type Telegram struct {
+
+}
+
+func (t *Telegram) Send(message string) bool {
+	return true
+}
+
+func (t *Telegram) Receive() (message string, ok bool) {
+	return "", true
+}
+
+type error interface {
+	Error() string
+}
+
+type Error string
+
+func (e Error) Error() string {
+	return string(e)
+}

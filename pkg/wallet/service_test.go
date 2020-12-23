@@ -174,53 +174,28 @@ func TestService_Repeat_success(t *testing.T) {
 	}
 }
 
-// func TestService_FindPaymentByID_success(t *testing.T) {
+// func TestService_FavoritePayment_success(t *testing.T) {
 // 	s := newTestServicw()
-// 	account, err := s.addAccountWithBalancce("+992935811033", 10_000_00)
+// 	account, err := s.addAccountWithBalancce("+992935811036", 10_000_00)
 // 	if err != nil {
 // 		t.Error(err)
 // 		return
 // 	}
 
-// 	payment, err := s.Pay(account.ID, 1_000_00, "auto")
-// 	if err != nil {
-// 		t.Errorf("FindPaymentByID(): can't create payment, error = %v", err)
-// 	}
-
-// 	got, err := s.FindPaymetByID(payment.ID)
-// 	if err != nil {
-// 		t.Errorf("FindPaymentByID(): error = %v", err)
-// 	}
-
-// 	if reflect.DeepEqual(payment, got) {
-// 		t.Errorf("FindPaymentID(): wrong payment returned = %v", err)
-// 	}
-	
-// }
-
-// func TestService_FindPaymentByID_fail(t *testing.T) {
-// 	s := newTestServicw()
-// 	account, err := s.addAccountWithBalancce("+992935811033", 10_000_00)
+// 	payment, err := s.Pay(account.ID, 1_00, "card")
 // 	if err != nil {
 // 		t.Error(err)
 // 		return
 // 	}
 
-// 	_, err = s.Pay(account.ID, 1_000_00, "auto")
+// 	favorite, err := s.FavoritePayment(payment.ID, "car")
 // 	if err != nil {
-// 		t.Errorf("FindPaymentByID(): can't create payment, error = %v", err)
+// 		t.Error(err)
 // 		return
 // 	}
 
-// 	_, err = s.FindPaymetByID(uuid.New().String())
-// 	if err != nil {
-// 		t.Errorf("FindPaymentByID(): error = %v", err)
-// 		return
+// 	if !reflect.DeepEqual(payment.Amount, favorite.Amount) {
+// 		t.Errorf("Inviled resulte: payment.Account %v, favorite.Amount %v", payment.Amount, favorite.Amount)
 // 	}
 
-// 	if err != ErrPaymentNotFound {
-// 		t.Errorf("FindPaymentID(): wrong payment returned = %v", err)
-// 		return
-// 	}
-	
 // }

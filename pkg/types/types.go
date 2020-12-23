@@ -54,3 +54,11 @@ type Error string
 func (e Error) Error() string {
 	return string(e)
 }
+
+type Favorite struct {
+	ID string
+	AccountID int64
+	Name string
+	Amount Money
+	Category PaymrntCategoty
+}

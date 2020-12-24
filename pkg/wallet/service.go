@@ -1,10 +1,12 @@
 package wallet
 
 import (
-	"strconv"
 	"errors"
+	"io"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/AlisherGulomzoda/wallet/pkg/types"
 	"github.com/google/uuid"
@@ -256,4 +258,66 @@ func (s *Service) ExportToFile(path string) error {
 
 	return nil
 
+}
+
+func (s *Service) ImportFromFile(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer func ()  {
+		if cerr := file.Close(); cerr != nil {
+			log.Print(cerr)
+		}
+	}()
+
+	content := make([]byte, 0)
+	buf := make([]byte, 4096)
+
+	for {
+		read, err := file.Read(buf)
+		if err == io.EOF {
+			content = append(content, buf[:read]...)
+			break
+		}
+
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+
+		content = append(content, buf[:read]...)
+	}
+
+	data := string(content)
+	splitSlice := strings.Split(data, "|")
+
+	for _, split := range splitSlice {
+		if split != ""{
+			datas := strings.Split(split, ";")
+			
+			id, err := strconv.Atoi(datas[0])
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+
+			balance, err := strconv.Atoi(datas[2])
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+
+			newAccount := &types.Account{
+				ID:      int64(id),
+				Phone:   types.Phone(datas[1]),
+				Balance: types.Money(balance),
+			}
+
+			s.accounts = append(s.accounts, newAccount)
+		}
+	}
+
+	return nil
+		
 }

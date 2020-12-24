@@ -97,4 +97,10 @@ func main() {
 		return
 	}
 
+	err = svc.ExportToFile("pkg/accountData/accounts.txt")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
 }

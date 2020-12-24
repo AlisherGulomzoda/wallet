@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -299,4 +300,21 @@ func TestService_PayFromFavorite_fail(t *testing.T) {
 		return
 	}
 
+}
+
+func TestService_PayFromFavorite_rules(t *testing.T) {
+	s := newTestService()
+	_, _, err := s.addAccount(defaultTestAccount)
+	if err != nil {
+		t.Error(err)
+		return 
+	}
+
+	payment, err := s.FavoritePayment(uuid.New().String(), "megafon")
+	if err != ErrPaymentNotFound {
+		t.Error(err)
+		return
+	}
+
+	fmt.Println(payment)
 }

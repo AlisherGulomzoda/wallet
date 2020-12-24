@@ -1,7 +1,10 @@
 package wallet
 
 import (
+	"strconv"
 	"errors"
+	"log"
+	"os"
 
 	"github.com/AlisherGulomzoda/wallet/pkg/types"
 	"github.com/google/uuid"
@@ -9,18 +12,18 @@ import (
 
 var (
 	ErrPhoneAlreadyRegitered = errors.New("phone already regitered")
-	ErrAmountMustGreateZero = errors.New("amount must be greated then zero")
-	ErrAccountNotFound = errors.New("account not found")
-	ErrBalanceNotAmount = errors.New("balance little then amount")
-	ErrPaymentNotFound = errors.New("payment not found")
-	ErrFavoriteNotFound = errors.New("favorit not found")
+	ErrAmountMustGreateZero  = errors.New("amount must be greated then zero")
+	ErrAccountNotFound       = errors.New("account not found")
+	ErrBalanceNotAmount      = errors.New("balance little then amount")
+	ErrPaymentNotFound       = errors.New("payment not found")
+	ErrFavoriteNotFound      = errors.New("favorit not found")
 )
 
 type Service struct {
 	nextAccountID int64
 	accounts      []*types.Account
 	payments      []*types.Payment
-	favorites	  []*types.Favorite
+	favorites     []*types.Favorite
 }
 
 func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
@@ -56,7 +59,7 @@ func (s *Service) Deposit(accountID int64, amount types.Money) error {
 	}
 
 	if account == nil {
-		return ErrAccountNotFound 
+		return ErrAccountNotFound
 	}
 
 	account.Balance += amount
@@ -89,11 +92,11 @@ func (s *Service) Pay(accountID int64, amount types.Money, category types.Paymrn
 	account.Balance -= amount
 	paymentID := uuid.New().String()
 	payment := &types.Payment{
-		ID: paymentID,
+		ID:        paymentID,
 		AccountID: account.ID,
-		Amount: amount,
-		Category: category,
-		Status: types.PaymentStatusInProgress,
+		Amount:    amount,
+		Category:  category,
+		Status:    types.PaymentStatusInProgress,
 	}
 
 	s.payments = append(s.payments, payment)
@@ -136,9 +139,9 @@ func (s *Service) Reject(paymentID string) error {
 	}
 
 	payment.Status = types.PaymentStatusFail
-	account.Balance += payment.Amount 
+	account.Balance += payment.Amount
 	payment.Amount = 0
-	
+
 	return nil
 
 }
@@ -156,7 +159,7 @@ func (s *Service) FindPaymetByID(paymentID string) (*types.Payment, error) {
 
 func (s *Service) Repeat(paymentID string) (*types.Payment, error) {
 	var payment *types.Payment
-	for _, pay := range s.payments{
+	for _, pay := range s.payments {
 		if pay.ID == paymentID {
 			payment = pay
 			break
@@ -219,10 +222,38 @@ func (s *Service) PayFromFavorite(favoriteID string) (*types.Payment, error) {
 	}
 
 	var payment *types.Payment
-	payment, err := s.Pay(favorite.AccountID, favorite.Amount, favorite.Category) 
+	payment, err := s.Pay(favorite.AccountID, favorite.Amount, favorite.Category)
 	if err != nil {
 		return nil, err
 	}
 
 	return payment, nil
+}
+
+func (s *Service) ExportToFile(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if cerr := file.Close(); cerr != nil {
+			log.Print(cerr)
+		}
+	}()
+
+	result := ""
+	for _, account := range s.accounts {
+		result += strconv.FormatInt(int64(account.ID), 10) + ";"
+		result += string(account.Phone) + ";"
+		result += strconv.FormatInt(int64(account.Balance), 10) + "|"
+	}
+
+	_, err = file.Write([]byte(result))
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

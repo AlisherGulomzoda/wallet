@@ -318,3 +318,74 @@ func TestService_PayFromFavorite_rules(t *testing.T) {
 
 	fmt.Println(payment)
 }
+
+func Benchmark_SumPayments(b *testing.B) {
+	svc := &Service{}
+
+	for i := 0; i < 103; i++ {
+		svc.payments = append(svc.payments, &types.Payment{Amount: 1})
+	}
+
+	result := 103
+
+	for i := 0; i < b.N; i++ {
+		sum := svc.SumPayments(result)
+		if result != int(sum) {
+			b.Fatalf("invalid result, got %v, want %v", sum, result)
+		}
+	}
+}
+
+func Benchmark_FilterPayments(b *testing.B) {
+	svc := &Service{}
+
+	account, err := svc.RegisterAccount("+992000000000")
+	if err != nil {
+		b.Error(err)
+	}
+	for i := 0; i < 103; i++ {
+		svc.payments = append(svc.payments, &types.Payment{AccountID: account.ID, Amount: 1})
+	}
+
+	result := 103
+
+	for i := 0; i < b.N; i++ {
+		payments, err := svc.FilterPayments(account.ID, result)
+		if err != nil {
+			b.Error(err)
+		}
+
+		if result != len(payments) {
+			b.Fatalf("invalid result, got %v, want %v", len(payments), result)
+		}
+	}
+}
+
+func Benchmark_FilterPaymentsByFn(b *testing.B) {
+	svc := &Service{}
+
+	for i := 0; i < 103; i++ {
+		svc.payments = append(svc.payments, &types.Payment{Amount: 1})
+	}
+
+	result := 103
+
+	for i := 0; i < b.N; i++ {
+		f := func(payment types.Payment) bool {
+			if payment.Amount == 1 {
+				return true
+			}
+
+			return false
+		}
+		
+		payments, err := svc.FilterPaymentsByFn(f, result)
+		if err != nil {
+			b.Error(err)
+		}
+
+		if result != len(payments) {
+			b.Fatalf("invalid result, got %v, want %v", len(payments), result)
+		}
+	}
+}

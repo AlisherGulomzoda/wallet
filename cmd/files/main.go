@@ -38,6 +38,12 @@ func main() {
 
 	fmt.Println(account.Balance)
 
+	err = os.Chdir("cmd/files")
+	if err != nil {
+		log.Print(err)
+	}
+
+
 	wd, err := os.Getwd()
 	if err != nil {
 		log.Println(err)

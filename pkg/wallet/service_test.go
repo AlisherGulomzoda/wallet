@@ -14,7 +14,7 @@ type testAccount struct {
 	balance types.Money
 	payments []struct {
 		amount types.Money
-		category types.PaymrntCategoty
+		category types.PaymentCategoty
 	}
 }
 
@@ -46,7 +46,7 @@ var defaultTestAccount = testAccount {
 	balance: 10_000_00,
 	payments: []struct {
 		amount types.Money
-		category types.PaymrntCategoty
+		category types.PaymentCategoty
 	} {
 		{amount: 1_000_00, category: "Auto"},
 	},

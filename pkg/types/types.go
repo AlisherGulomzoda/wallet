@@ -2,7 +2,7 @@ package types
 
 type Money int64
 
-type PaymrntCategoty string
+type PaymentCategoty string
 
 type PaymentStatus string
 
@@ -16,7 +16,7 @@ type Payment struct {
 	ID        string
 	AccountID int64
 	Amount    Money
-	Category  PaymrntCategoty
+	Category  PaymentCategoty
 	Status    PaymentStatus
 }
 
@@ -60,5 +60,5 @@ type Favorite struct {
 	AccountID int64
 	Name string
 	Amount Money
-	Category PaymrntCategoty
+	Category PaymentCategoty
 }

@@ -3,6 +3,7 @@ package wallet
 import (
 	"errors"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -233,6 +234,13 @@ func (s *Service) PayFromFavorite(favoriteID string) (*types.Payment, error) {
 }
 
 func (s *Service) ExportToFile(path string) error {
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Print(err)
+	}
+
+	log.Print(wd)
+
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -251,7 +259,7 @@ func (s *Service) ExportToFile(path string) error {
 		result += strconv.FormatInt(int64(account.Balance), 10) + "|"
 	}
 
-	_, err = file.Write([]byte(result))
+	err = ioutil.WriteFile(path, []byte(result), 0666)
 	if err != nil {
 		return err
 	}
@@ -265,7 +273,7 @@ func (s *Service) ImportFromFile(path string) error {
 	if err != nil {
 		return err
 	}
-	defer func ()  {
+	defer func() {
 		if cerr := file.Close(); cerr != nil {
 			log.Print(cerr)
 		}
@@ -293,9 +301,9 @@ func (s *Service) ImportFromFile(path string) error {
 	splitSlice := strings.Split(data, "|")
 
 	for _, split := range splitSlice {
-		if split != ""{
+		if split != "" {
 			datas := strings.Split(split, ";")
-			
+
 			id, err := strconv.Atoi(datas[0])
 			if err != nil {
 				log.Println(err)
@@ -319,5 +327,5 @@ func (s *Service) ImportFromFile(path string) error {
 	}
 
 	return nil
-		
+
 }

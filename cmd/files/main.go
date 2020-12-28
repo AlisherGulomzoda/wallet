@@ -2,32 +2,25 @@ package main
 
 import (
 	"log"
-	"sync"
+	"time"
 )
 
 
 
+
 func main() {
-	log.Print("Main started!")
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-
-	sum := 0
+	ch := make(chan struct{})
 	go func ()  {
-		defer wg.Done()
-		for i := 0; i < 1_000; i++ {
-			sum++
-		}
-	}()
-	go func ()  {
-		defer wg.Done()
-		for i := 0; i < 1_000; i++ {
-			sum++
-		}
+		<- time.After(time.Second)
+		close(ch)
 	}()
 
-	wg.Wait()
-	log.Print("Main finished!")
-	log.Print(sum)
+	val, ok := <- ch
+	if !ok {
+		log.Print("channel closed")
+		return
+	}
+
+	log.Print(val)
 
 }

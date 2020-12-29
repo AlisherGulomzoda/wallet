@@ -1,26 +1,39 @@
 package main
 
-import (
-	"log"
-	"time"
-)
+import "log"
 
 
 
 
 func main() {
-	ch := make(chan struct{})
-	go func ()  {
-		<- time.After(time.Second)
-		close(ch)
-	}()
-
-	val, ok := <- ch
-	if !ok {
-		log.Print("channel closed")
-		return
+	data := make([]int, 1_000_000)
+	for i := range data {
+		data[i] = i
 	}
 
-	log.Print(val)
+	ch := make(chan int)
+	defer close(ch)
 
+	parts := 10
+	size := len(data) / parts
+	channels := make([] <- chan int, parts)
+
+	for i := 0; i < parts; i++ {
+		ch := make(chan int)
+		channels[i] = ch
+		go func (ch chan <- int, data []int)  {
+			sum := 0
+			for _, v := range data {
+				sum += v
+			}
+			ch <- sum
+		}(ch, data[i * size : (i +1) * size])
+	}
+
+	total := 0
+	for value := range channels {
+		total += value
+	}
+
+	log.Print(total)
 }

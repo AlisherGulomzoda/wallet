@@ -34,7 +34,6 @@ type Messenger interface {
 }
 
 type Telegram struct {
-
 }
 
 func (t *Telegram) Send(message string) bool {
@@ -56,9 +55,14 @@ func (e Error) Error() string {
 }
 
 type Favorite struct {
-	ID string
+	ID        string
 	AccountID int64
-	Name string
-	Amount Money
-	Category PaymentCategoty
+	Name      string
+	Amount    Money
+	Category  PaymentCategoty
+}
+
+type Progress struct {
+	Part   int
+	Result Money
 }
